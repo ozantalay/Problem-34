@@ -1,15 +1,16 @@
 import Image from 'next/image'
 import { createContext, useContext } from 'react'
-
+import { useState } from 'react'
 const SessionContext = createContext(null)
 
 export default function App() {
-  const session = { name: 'Namık Korona', initials: 'NK' }
+  const [isAuthenticated, setIsAuthenticated] = useState(null)
+  const session = isAuthenticated ? { name: 'Namık Korona', initials: 'NK' }:null
 
   return (
-    <SessionContext.Provider value={session}>
+    <SessionContext.Provider value={{session,setIsAuthenticated}}>
       <div className='bg-white'>
-        <Header session={session} />
+        <Header  />
         <Hero />
       </div>
     </SessionContext.Provider>
@@ -31,17 +32,33 @@ function Header() {
 }
 
 function Avatar() {
-  const session = useContext(SessionContext)
+  const {session,setIsAuthenticated} = useContext(SessionContext)
+  const handleLogOut=()=>{
+    setIsAuthenticated(false)
+  }
+  const handleSignIn=()=>{
+    setIsAuthenticated(true)
+  }
+
 
   return (
     <div className='items-center space-x-2 flex lg:flex-1 lg:justify-end'>
-      <span className='inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-500'>
+      {session ? (
+        <>
+        <span className='inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-500'>
         <span className='text-lg font-medium leading-none text-white'>
           {session.initials}
         </span>
       </span>
       <span>{session.name}</span>
-    </div>
+      <button onClick={handleLogOut}>Logout</button>
+        </>
+    ):(
+      <button onClick={handleSignIn}>Sign In</button>
+    )
+    
+    }
+      </div>
   )
 }
 
